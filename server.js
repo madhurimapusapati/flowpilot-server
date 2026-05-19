@@ -34,7 +34,7 @@ app.use("/api/auth",     authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/tasks",    taskRoutes);
 
-app.get("/", (req, res) => res.send("FlowPilot API Running"));
+app.get("/", (req, res) =>{ res.send("FlowPilot API Running")});
 
 // ── Global error handler ──────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
@@ -43,4 +43,4 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => { console.log(`Server running on port ${PORT}`)} );
