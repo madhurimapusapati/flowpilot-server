@@ -12,17 +12,13 @@ connectDB();
 const app = express();
 
 // ── CORS ──────────────────────────────────────────────────────────────────────
-const allowedOrigins = [
-  "http://localhost:5173",          // Vite dev server
-  "http://localhost:4173",          // Vite preview
-  process.env.CLIENT_URL,           // Railway frontend URL (set in Railway env vars)
-].filter(Boolean);
+const cors = require("cors");
 
 app.use(cors({
-  origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-    return cb(null, false);
-  },
+  origin: [
+    "http://localhost:5173",
+    "https://flowpilot-client-hazel.vercel.app"
+  ],
   credentials: true,
 }));
 
