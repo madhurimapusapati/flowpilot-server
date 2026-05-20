@@ -14,4 +14,7 @@ router.put ("/password", protect,              authController.updatePassword);
 // Admin-only route — promote or demote any user
 router.put ("/promote",  protect, adminOnly,   authController.promoteUser);
 
+// GET all users — admin only (for adding members to projects)
+router.get ("/users",    protect, adminOnly,   authController.getAllUsers);
+
 module.exports = router;

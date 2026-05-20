@@ -72,7 +72,6 @@ exports.getRecentTasks = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    // Find all project IDs the user belongs to
     const projects = await Project.find({
       $or: [{ createdBy: userId }, { members: userId }],
     }).select("_id");
@@ -83,6 +82,33 @@ exports.getRecentTasks = async (req, res) => {
       .populate(POPULATE)
       .sort({ updatedAt: -1 })
       .limit(6);
+
+    res.json(tasks);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET /api/tasks/overdue  — all non-done tasks with dueDate < today
+exports.getOverdueTasks = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const projects = await Project.find({
+      $or: [{ createdBy: userId }, { members: userId }],
+    }).select("_id");
+
+    const projectIds = projects.map((p) => p._id);
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const tasks = await Task.find({
+      project: { $in: projectIds },
+      status:  { $ne: "done" },
+      dueDate: { $lt: now },
+    })
+      .populate(POPULATE)
+      .sort({ dueDate: 1 });
 
     res.json(tasks);
   } catch (err) {

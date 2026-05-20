@@ -9,18 +9,8 @@ exports.signup = async (req, res) => {
       return res.status(400).json({ message: "All fields are required" });
     }
 
-    // Determine final role
-    let assignedRole = "member";
-    if (role === "admin") {
-      const secret = process.env.ADMIN_SECRET_KEY;
-      if (!secret) {
-        return res.status(403).json({ message: "Admin signup is disabled" });
-      }
-      if (!adminKey || adminKey !== secret) {
-        return res.status(401).json({ message: "Invalid admin secret key" });
-      }
-      assignedRole = "admin";
-    }
+    // Determine final role — anyone can sign up as admin or member
+    const assignedRole = role === "admin" ? "admin" : "member";
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -120,6 +110,16 @@ exports.promoteUser = async (req, res) => {
       message: `${target.name} is now a ${role}`,
       user: { _id: target._id, name: target.name, email: target.email, role: target.role },
     });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET /api/auth/users  — admin fetches all users to add as project members
+exports.getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select("_id name email role").sort({ name: 1 });
+    res.json(users);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
